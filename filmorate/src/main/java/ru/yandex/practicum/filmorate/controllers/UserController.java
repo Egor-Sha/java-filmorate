@@ -1,52 +1,41 @@
 package ru.yandex.practicum.filmorate.controllers;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import ru.yandex.practicum.filmorate.exceptions.NewException;
+import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
+import javax.validation.Valid;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+
 @Slf4j
+@RestController
 public class UserController {
 
     private final Map<String, User> users = new HashMap<>();
-
-    @PostMapping
-    public User create(@RequestBody User user) throws NewException {
-        if(user.getEmail() == null || user.getEmail().isBlank()) {
-            throw new NewException("Адрес электронной почты не может быть пустым.");
-        }
+    @PostMapping("/users")
+    public User create(@Valid @RequestBody User user) throws ValidationException {
         if(users.containsKey(user.getEmail())) {
-            throw new NewException("Пользователь с электронной почтой " +
+            throw new ValidationException("Пользователь с электронной почтой " +
                     user.getEmail() + " уже зарегистрирован.");
         }
+        user.setId((int) (Math.random() * 10));
         users.put(user.getEmail(), user);
+        log.info("Object of " + User.class + " added");
         return user;
     }
+    @PutMapping("/users")
+    public User put(@Valid @RequestBody User user) throws ValidationException {
 
-    @GetMapping
+        users.put(user.getEmail(), user);
+        log.info("Object of " + User.class + " changed");
+        return user;
+    }
+    @GetMapping("/users")
     public Collection<User> findAll() {
         return users.values();
     }
-
-
-
-    @PutMapping
-    public User put(@RequestBody User user) throws NewException {
-        if(user.getEmail() == null || user.getEmail().isBlank()) {
-            throw new NewException("Адрес электронной почты не может быть пустым.");
-        }
-        users.put(user.getEmail(), user);
-
-        return user;
-    }
-
-
-
 }
