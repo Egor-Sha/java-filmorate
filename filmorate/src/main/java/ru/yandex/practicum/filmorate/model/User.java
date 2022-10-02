@@ -5,7 +5,6 @@ import javax.validation.constraints.*;
 
 @Data
 public class User {
-
     int id;
     @Email
     String email;
@@ -14,5 +13,4 @@ public class User {
     String name;
     @NotEmpty
     String birthday;
-
 }

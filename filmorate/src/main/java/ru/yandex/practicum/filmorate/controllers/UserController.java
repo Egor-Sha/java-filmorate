@@ -12,14 +12,10 @@ import java.util.*;
 @Slf4j
 @RestController
 public class UserController {
-
-    private final Map<String, User> users = new HashMap<>();
+    private final Map<Integer, User> users = new HashMap<>();
     private int id = 1;
     @PostMapping("/users")
     public User create(@Valid @RequestBody User user) throws ValidationException {
-        if(users.containsKey(user.getEmail())) {
-            throw new ValidationException("Пользователь с такой почтой уже зарегистрирован.");
-        }
 
         if(user.getLogin().contains(" ")) {
             throw new ValidationException("В логине не должно быть пробелов");
@@ -32,15 +28,17 @@ public class UserController {
             user.setName(user.getLogin());
         }
         user.setId(id++);
-        users.put(user.getEmail(), user);
+        users.put(user.getId(), user);
         log.info("Создан пользователь " + user.getLogin());
         return user;
     }
     @PutMapping("/users")
     public User put(@Valid @RequestBody User user) throws ValidationException {
-        if(!(users.containsKey(user.getEmail()))) {
-            throw new ValidationException("Пользователь не найден.");
+
+        if(!(users.containsKey(user.getId()))) {
+            throw new ValidationException("Пользователь не найден");
         }
+
         if(user.getLogin().contains(" ")) {
             throw new ValidationException("В логине не должно быть пробелов");
         }
@@ -48,10 +46,10 @@ public class UserController {
             user.setName(user.getLogin());
         }
         LocalDate dateBirthday = LocalDate.parse(user.getBirthday());
-        if(dateBirthday.isBefore(LocalDate.now())) {
-            throw new ValidationException("Проверьте дату рождения, должно быть в прошлом.");
+        if(dateBirthday.isAfter(LocalDate.now())) {
+            throw new ValidationException("Проверьте дату рождения, должно быть в прошлом");
         }
-        users.put(user.getEmail(), user);
+        users.put(user.getId(), user);
         log.info("Пользователь " + user.getLogin() + " изменен");
         return user;
     }

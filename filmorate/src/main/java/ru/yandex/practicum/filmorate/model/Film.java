@@ -5,7 +5,6 @@ import javax.validation.constraints.*;
 
 @Data
 public class Film {
-
     int id;
     @NotEmpty
     String name;
@@ -15,5 +14,4 @@ public class Film {
     String releaseDate;
     @Positive
     int duration;
-
 }

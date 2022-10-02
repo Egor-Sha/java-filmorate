@@ -11,10 +11,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 public class UserControllerTests {
-
     @Autowired
     UserController userController;
-
     @Test
     void createUserWithSpacesInLoginTest () throws ValidationException {
         User user = new User();
@@ -52,5 +50,4 @@ public class UserControllerTests {
         userController.create(user);
         assertEquals("loginAndName", user.getName(), "Имя и логин не совпадают");
     }
-
 }
