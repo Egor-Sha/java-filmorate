@@ -1,41 +1,62 @@
 package ru.yandex.practicum.filmorate.controllers;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
-
 import javax.validation.Valid;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
+import java.time.LocalDate;
+import java.util.*;
 
 @Slf4j
 @RestController
 public class UserController {
 
     private final Map<String, User> users = new HashMap<>();
+    private int id = 1;
     @PostMapping("/users")
     public User create(@Valid @RequestBody User user) throws ValidationException {
         if(users.containsKey(user.getEmail())) {
-            throw new ValidationException("Пользователь с электронной почтой " +
-                    user.getEmail() + " уже зарегистрирован.");
+            throw new ValidationException("Пользователь с такой почтой уже зарегистрирован.");
         }
-        user.setId((int) (Math.random() * 10));
+
+        if(user.getLogin().contains(" ")) {
+            throw new ValidationException("В логине не должно быть пробелов");
+        }
+        LocalDate dateBirthday = LocalDate.parse(user.getBirthday());
+        if(dateBirthday.isAfter(LocalDate.now())) {
+            throw new ValidationException("Проверьте дату рождения");
+        }
+        if(!StringUtils.hasText(user.getName())) {
+            user.setName(user.getLogin());
+        }
+        user.setId(id++);
         users.put(user.getEmail(), user);
-        log.info("Object of " + User.class + " added");
+        log.info("Создан пользователь " + user.getLogin());
         return user;
     }
     @PutMapping("/users")
     public User put(@Valid @RequestBody User user) throws ValidationException {
-
+        if(!(users.containsKey(user.getEmail()))) {
+            throw new ValidationException("Пользователь не найден.");
+        }
+        if(user.getLogin().contains(" ")) {
+            throw new ValidationException("В логине не должно быть пробелов");
+        }
+        if(!StringUtils.hasText(user.getName())) {
+            user.setName(user.getLogin());
+        }
+        LocalDate dateBirthday = LocalDate.parse(user.getBirthday());
+        if(dateBirthday.isBefore(LocalDate.now())) {
+            throw new ValidationException("Проверьте дату рождения, должно быть в прошлом.");
+        }
         users.put(user.getEmail(), user);
-        log.info("Object of " + User.class + " changed");
+        log.info("Пользователь " + user.getLogin() + " изменен");
         return user;
     }
     @GetMapping("/users")
-    public Collection<User> findAll() {
-        return users.values();
+    public List<User> getUsers() {
+        return new ArrayList<>(users.values());
     }
 }
