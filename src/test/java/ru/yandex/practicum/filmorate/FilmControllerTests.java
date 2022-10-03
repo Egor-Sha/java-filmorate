@@ -6,6 +6,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.controllers.FilmController;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+
+import java.time.LocalDate;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -17,7 +20,7 @@ public class FilmControllerTests {
     @Test
     void createFilmWithInvalidDateTest () throws ValidationException {
         Film film = new Film();
-        film.setReleaseDate("1700-12-17");
+        film.setReleaseDate(LocalDate.of(1800, 12, 29));
         final ValidationException exception = assertThrows(
                 ValidationException.class,
                 () -> {
@@ -32,7 +35,7 @@ public class FilmControllerTests {
         film.setDescription("Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean " +
                 "commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis " +
                 "parturient montes, nascetur ridiculus mus. Donec qua");
-        film.setReleaseDate("1900-12-17");
+        film.setReleaseDate(LocalDate.of(1900, 12, 29));
         final ValidationException exception = assertThrows(
                 ValidationException.class,
                 () -> {

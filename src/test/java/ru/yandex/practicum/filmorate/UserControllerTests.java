@@ -6,6 +6,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.controllers.UserController;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+
+import java.time.LocalDate;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -27,25 +30,11 @@ public class UserControllerTests {
     }
 
     @Test
-    void createUserWithInvalidBirthdayTest () throws ValidationException {
-        User user = new User();
-        user.setEmail("test2@yandextest.com");
-        user.setLogin("login");
-        user.setBirthday("2022-12-17");
-        final ValidationException exception = assertThrows(
-                ValidationException.class,
-                () -> {
-                    userController.create(user);
-                });
-        assertEquals("Проверьте дату рождения", exception.getMessage());
-    }
-
-    @Test
     void createUserWithoutNameTest () throws ValidationException {
         User user = new User();
         user.setEmail("test3@yandextest.com");
         user.setLogin("loginAndName");
-        user.setBirthday("1985-12-17");
+        user.setBirthday(LocalDate.of(1995, 12, 29));
         user.setName("");
         userController.create(user);
         assertEquals("loginAndName", user.getName(), "Имя и логин не совпадают");
