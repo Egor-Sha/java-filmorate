@@ -17,7 +17,7 @@ public class FilmController {
     private final Map<Long, Film> films = new HashMap<>();
 
     @PostMapping("/films")
-    public Film create(@Valid @RequestBody Film film) throws ValidationException {
+    public Film create(@Valid @RequestBody Film film) {
 
         validate(film);
         film.setId(id++);
@@ -27,7 +27,7 @@ public class FilmController {
     }
 
     @PutMapping("/films")
-    public Film put(@Valid @RequestBody Film film) throws ValidationException {
+    public Film put(@Valid @RequestBody Film film) {
         if (!(films.containsKey(film.getId()))) {
                 throw new ValidationException("Фильм не найден, проверьте название");
         }

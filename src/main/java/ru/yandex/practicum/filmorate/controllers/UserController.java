@@ -16,7 +16,7 @@ public class UserController {
     private long id = 1;
 
     @PostMapping("/users")
-    public User create(@Valid @RequestBody User user) throws ValidationException {
+    public User create(@Valid @RequestBody User user) {
 
         validate(user);
         user.setId(id++);
@@ -26,7 +26,7 @@ public class UserController {
     }
 
     @PutMapping("/users")
-    public User put(@Valid @RequestBody User user) throws ValidationException {
+    public User put(@Valid @RequestBody User user) {
 
         if (!(users.containsKey(user.getId()))) {
                 throw new ValidationException("Пользователь не найден");
