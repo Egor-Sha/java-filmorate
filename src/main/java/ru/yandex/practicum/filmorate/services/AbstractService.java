@@ -30,13 +30,7 @@ public abstract class AbstractService<T extends StorageData> {
         return data;
     }
 
-    public void delete(long id) {
-        storage.delete(id);
-    }
-
     public List<T> getAll() {
         return storage.getAll();
     }
-
-
 }

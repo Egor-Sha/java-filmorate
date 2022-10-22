@@ -3,8 +3,6 @@ package ru.yandex.practicum.filmorate.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.StorageData;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.Storage;
 
@@ -20,7 +18,7 @@ public class UserService extends AbstractService<User> {
 
     @Override
     protected void validate(User data) {
-        if (data.getLogin().contains("")) {
+        if (data.getLogin().contains(" ")) {
             throw new ValidationException("В логине не должно быть пробелов");
         }
         if (data.getName() == null || data.getName().isEmpty()) {

@@ -40,6 +40,7 @@ public class FilmController {
         return service.update(film);
     }
 
+
     @PutMapping("/films/{id}/like/{userId}")
     public void addLike(@PathVariable long id, @PathVariable long userId) {
         service.addLike(id, userId);
@@ -50,8 +51,8 @@ public class FilmController {
         service.removeLike(id, userId);
     }
 
-    @GetMapping()
-    public List<Film> getPopular(@RequestParam(defaultValue = "10") int count) {
+    @GetMapping("GET /films/popular?count={count}")
+    public List<Film> getPopular(@RequestParam(defaultValue = "10") @PathVariable int count) {
         return service.getPopular(count);
     }
 }
