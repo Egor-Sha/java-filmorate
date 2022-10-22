@@ -1,57 +1,57 @@
 package ru.yandex.practicum.filmorate.controllers;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.services.FilmService;
 import javax.validation.Valid;
-import java.time.LocalDate;
 import java.util.*;
 
 @Slf4j
 @RestController
 public class FilmController {
+    FilmService service;
 
-    private LocalDate FIRST_MOVIE_DATE = LocalDate.of(1895, 12, 29);
-    private long id = 1;
-    private final Map<Long, Film> films = new HashMap<>();
-
-    @PostMapping("/films")
-    public Film create(@Valid @RequestBody Film film) {
-
-        validate(film);
-        film.setId(id++);
-        films.put(film.getId(), film);
-        log.info("Добавлен фильм " + film.getName());
-        return film;
-    }
-
-    @PutMapping("/films")
-    public Film put(@Valid @RequestBody Film film) {
-        if (!(films.containsKey(film.getId()))) {
-                throw new ValidationException("Фильм не найден, проверьте название");
-        }
-
-        validate(film);
-        films.put(film.getId(), film);
-        log.info("Фильм " + film.getName() + " изменен");
-        return film;
+    @Autowired
+    public FilmController(FilmService service) {
+        this.service = service;
     }
 
     @GetMapping("/films")
     public List<Film> getFilms() {
-
-        return new ArrayList<>(films.values());
+        return service.getAll();
     }
 
-    private void validate(Film film) throws ValidationException {
-        LocalDate dateRelease = film.getReleaseDate();
-        if (dateRelease.isBefore(FIRST_MOVIE_DATE)) {
-                throw new ValidationException("Проверьте дату релиза");
+    @GetMapping("/films/{id}")
+    public Film get(@PathVariable long id) {
+        return service.get(id);
+    }
 
-        }
-        if (film.getDescription().length()>200) {
-                throw new ValidationException("Описание должно быть до 200 символов");
-        }
+    @PostMapping("/films")
+    public Film create(@Valid @RequestBody final Film film) {
+        log.info("Добавлен фильм " + film.getName());
+        return service.create(film);
+    }
+
+    @PutMapping("/films")
+    public Film put(@Valid @RequestBody final Film film) {
+        log.info("Фильм " + film.getName() + " изменен");
+        return service.update(film);
+    }
+
+    @PutMapping("/films/{id}/like/{userId}")
+    public void addLike(@PathVariable long id, @PathVariable long userId) {
+        service.addLike(id, userId);
+    }
+
+    @DeleteMapping("/films/{id}/like/{userId}")
+    public void removeLike(@PathVariable long id, @PathVariable long userId) {
+        service.removeLike(id, userId);
+    }
+
+    @GetMapping()
+    public List<Film> getPopular(@RequestParam(defaultValue = "10") int count) {
+        return service.getPopular(count);
     }
 }

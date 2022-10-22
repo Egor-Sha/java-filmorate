@@ -1,56 +1,49 @@
 package ru.yandex.practicum.filmorate.controllers;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.services.UserService;
+
 import javax.validation.Valid;
-import java.time.LocalDate;
 import java.util.*;
 
 @Slf4j
 @RestController
 public class UserController {
-    private final Map<Long, User> users = new HashMap<>();
-    private long id = 1;
+    UserService service;
 
-    @PostMapping("/users")
-    public User create(@Valid @RequestBody User user) {
-
-        validate(user);
-        user.setId(id++);
-        users.put(user.getId(), user);
-        log.info("Создан пользователь " + user.getLogin());
-        return user;
-    }
-
-    @PutMapping("/users")
-    public User put(@Valid @RequestBody User user) {
-
-        if (!(users.containsKey(user.getId()))) {
-                throw new ValidationException("Пользователь не найден");
-        }
-
-        validate(user);
-        users.put(user.getId(), user);
-        log.info("Пользователь " + user.getLogin() + " изменен");
-        return user;
+    @Autowired
+    public UserController(UserService service) {
+        this.service = service;
     }
 
     @GetMapping("/users")
     public List<User> getUsers() {
-
-        return new ArrayList<>(users.values());
+        return service.getAll();
     }
 
-    private void validate(User user) throws ValidationException {
-        if (user.getLogin().contains(" ")) {
-                throw new ValidationException("В логине не должно быть пробелов");
-        }
-
-        if (!StringUtils.hasText(user.getName())) {
-            user.setName(user.getLogin());
-        }
+    @PostMapping("/users")
+    public User create(@Valid @RequestBody final User user) {
+        log.info("Создан пользователь " + user.getLogin());
+        return service.create(user);
     }
+
+    @PutMapping("/users")
+    public User put(@Valid @RequestBody final User user) {
+        return service.update(user);
+    }
+
+    @PutMapping("/users/{id}/like/{userId}")
+    public void addFriend(@PathVariable long id, @PathVariable long userId) {
+        service.addFriend(id, userId);
+    }
+
+    @DeleteMapping("/users/{id}/like/{userId}")
+    public void removeFriend(@PathVariable long id, @PathVariable long userId) {
+        service.removeFriend(id, userId);
+    }
+
+
 }
