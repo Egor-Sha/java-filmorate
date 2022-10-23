@@ -1,13 +1,14 @@
 package ru.yandex.practicum.filmorate.services;
 
 import ru.yandex.practicum.filmorate.model.StorageData;
+import ru.yandex.practicum.filmorate.storage.AbstractStorage;
 import ru.yandex.practicum.filmorate.storage.Storage;
 import java.util.List;
 
 public abstract class AbstractService<T extends StorageData> {
 
     private long counter = 0L;
-    Storage<T> storage;
+    Storage<T> storage = new AbstractStorage<T>();
 
     protected abstract void validate(T data);
 

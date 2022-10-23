@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.Storage;
@@ -23,7 +24,7 @@ public class UserService extends AbstractService<User> {
         if (data.getLogin().contains(" ")) {
             throw new ValidationException("В логине не должно быть пробелов");
         }
-        if (data.getName() == null || data.getName().isEmpty()) {
+        if (!StringUtils.hasText(data.getName())) {
             data.setName(data.getLogin());
         }
     }
