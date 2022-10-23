@@ -38,11 +38,6 @@ public class AbstractStorage<T extends StorageData> implements Storage<T> {
     }
 
     @Override
-    public void delete(long id) {
-        storage.remove(id);
-    }
-
-    @Override
     public List<T> getAll() {
         return new ArrayList<>(storage.values());
     }

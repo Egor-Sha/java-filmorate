@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.Storage;
+import java.util.HashSet;
+import java.util.Set;
 
 @Service
 public class UserService extends AbstractService<User> {
@@ -41,5 +43,17 @@ public class UserService extends AbstractService<User> {
         friend.getFriendsId().remove(userId);
     }
 
+    public Set<Long> getFriends(long userId) {
+        final User user = storage.get(userId);
+        return user.getFriendsId();
+    }
 
+    public Set<Long> getCommonFriends(long userId, long friendId) {
+        final User user = storage.get(userId);
+        final User friend = storage.get(friendId);
+        Set<Long> common = new HashSet<>();
+        common.addAll(user.getFriendsId());
+        common.addAll(friend.getFriendsId());
+        return common;
+    }
 }
