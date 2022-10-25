@@ -34,7 +34,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public void update(Film data) {
         if (!storage.containsKey(data.getId())) {
-            throw new DataNotFoundException("id = " + data.getId());
+            throw new DataNotFoundException("Data not found, id = " + data.getId());
         }
         storage.put(data.getId(), data);
     }
@@ -44,5 +44,9 @@ public class InMemoryFilmStorage implements FilmStorage {
         return new ArrayList<>(storage.values());
     }
 
+    @Override
+    public List<Film> getPopular(int count) {
+        return null;
+    }
 
 }

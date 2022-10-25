@@ -8,7 +8,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Data
-public class User extends StorageData {
+public class User {
+    private long id;
     @Email
     private String email;
     @NotEmpty

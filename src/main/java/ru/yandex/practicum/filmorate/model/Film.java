@@ -14,7 +14,7 @@ import java.util.Set;
 @ToString(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class Film extends StorageData {
+public class Film {
     private long id;
     @NotBlank
     private String name;

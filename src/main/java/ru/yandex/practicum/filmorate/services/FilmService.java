@@ -6,7 +6,9 @@ import ru.yandex.practicum.filmorate.exceptions.DataNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.Storage;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
+
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
@@ -17,14 +19,18 @@ public class FilmService {
 
     private final LocalDate FIRST_MOVIE_DATE = LocalDate.of(1895, 12, 29);
     Comparator<Film> FILM_COMPARATOR = Comparator.comparingLong(Film::getRate);
-    Storage<User> userStorage;
-    Storage<Film> filmStorage;
+    UserStorage userStorage;
+    FilmStorage filmStorage;
     private long counter = 0L;
 
     @Autowired
-    public FilmService(Storage<Film> storage, Storage<User> userStorage) {
+    public FilmService(FilmStorage filmStorage, UserStorage userStorage) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
+    }
+
+    public Film getFilm(long id) {
+        return filmStorage.get(id);
     }
 
     public Film create(Film data) {
@@ -34,13 +40,8 @@ public class FilmService {
         return data;
     }
 
-    public Film get(long id) {
-        return filmStorage.get(id);
-    }
-
     public Film update(Film data) {
-        filmStorage.get(data.getId());
-        data.setId(data.getId());
+        if (data == null){throw new DataNotFoundException("Film not found");}
         validate(data);
         filmStorage.update(data);
         return data;
@@ -75,7 +76,7 @@ public class FilmService {
 
     public List<Film> getPopular(int count) {
         return filmStorage.getAll().stream()
-                .sorted(FILM_COMPARATOR)
+                .sorted(Comparator.comparingInt((film-> (int) (film.getRate()*(-1)))))
                 .limit(count)
                 .collect(Collectors.toList());
     }

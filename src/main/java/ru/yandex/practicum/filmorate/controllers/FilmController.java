@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.controllers;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exceptions.DataNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.services.FilmService;
 import javax.validation.Valid;
@@ -18,14 +19,14 @@ public class FilmController {
         this.service = service;
     }
 
+    @GetMapping("/films/{id}")
+    public Film getFilm(@Valid @PathVariable("id") long id) throws DataNotFoundException {
+        return service.getFilm(id);
+    }
+
     @GetMapping("/films")
     public List<Film> getFilms() {
         return service.getAll();
-    }
-
-    @GetMapping("/films/{id}")
-    public Film get(@PathVariable long id) {
-        return service.get(id);
     }
 
     @PostMapping("/films")

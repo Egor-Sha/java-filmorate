@@ -7,7 +7,7 @@ import ru.yandex.practicum.filmorate.exceptions.DataNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.Storage;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -15,12 +15,16 @@ import java.util.Set;
 @Service
 public class UserService {
 
-    Storage<User> userStorage;
+    UserStorage userStorage;
     private long counter = 0L;
 
     @Autowired
-    public UserService(Storage<User> storage) {
-        this.userStorage = storage;
+    public UserService(UserStorage userStorage) {
+        this.userStorage = userStorage;
+    }
+
+    public User getUser(long id) {
+        return userStorage.get(id);
     }
 
     public User create(User data) {
@@ -30,13 +34,8 @@ public class UserService {
         return data;
     }
 
-    public User get(long id) {
-        return userStorage.get(id);
-    }
-
-    public User update(User data) {
-        userStorage.get(data.getId());
-        data.setId(data.getId());
+    public User update(User data) throws DataNotFoundException {
+        if (data == null){throw new DataNotFoundException("Нет данных");}
         validate(data);
         userStorage.update(data);
         return data;
@@ -56,8 +55,8 @@ public class UserService {
     }
 
     public void addFriend(long userId, long friendId) throws DataNotFoundException {
-        final User user = userStorage.get(userId);
-        final User friend = userStorage.get(userId);
+        final User user = getUser(userId);
+        final User friend = getUser(userId);
         if (user == null) {throw new DataNotFoundException("User not found");}
         if (friend == null) {throw new DataNotFoundException("Friend not found");}
         user.getFriendsId().add(friendId);
@@ -65,8 +64,8 @@ public class UserService {
     }
 
     public void removeFriend(long userId, long friendId) throws DataNotFoundException {
-        final User user = userStorage.get(userId);
-        final User friend = userStorage.get(userId);
+        final User user = getUser(userId);
+        final User friend = getUser(userId);
         if (user == null) {throw new DataNotFoundException("User not found");}
         if (friend == null) {throw new DataNotFoundException("Friend not found");}
         user.getFriendsId().remove(friendId);
@@ -86,4 +85,5 @@ public class UserService {
         common.addAll(friend.getFriendsId());
         return common;
     }
+
 }
