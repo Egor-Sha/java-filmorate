@@ -6,7 +6,6 @@ import ru.yandex.practicum.filmorate.exceptions.DataNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Component
@@ -40,13 +39,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> getAll() {
+    public ArrayList<Film> getAll() {
         return new ArrayList<>(storage.values());
     }
-
-    @Override
-    public List<Film> getPopular(int count) {
-        return null;
-    }
-
 }

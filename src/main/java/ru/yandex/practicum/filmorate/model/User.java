@@ -18,5 +18,6 @@ public class User {
     @Past
     private LocalDate birthday;
     @JsonIgnore
-    private transient Set<Long> friendsId = new HashSet<>();
+    private Set<Long> friendsId = new HashSet<>();
+
 }

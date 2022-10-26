@@ -5,12 +5,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import ru.yandex.practicum.filmorate.exceptions.DataNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
-import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -56,34 +55,38 @@ public class UserService {
 
     public void addFriend(long userId, long friendId) throws DataNotFoundException {
         final User user = getUser(userId);
-        final User friend = getUser(userId);
-        if (user == null) {throw new DataNotFoundException("User not found");}
-        if (friend == null) {throw new DataNotFoundException("Friend not found");}
+        final User friend = getUser(friendId);
+        if (user == null) {throw new DataNotFoundException("Пользователь не найден");}
+        if (friend == null) {throw new DataNotFoundException("Друг пользователя не найден");}
         user.getFriendsId().add(friendId);
         friend.getFriendsId().add(userId);
     }
 
     public void removeFriend(long userId, long friendId) throws DataNotFoundException {
         final User user = getUser(userId);
-        final User friend = getUser(userId);
-        if (user == null) {throw new DataNotFoundException("User not found");}
-        if (friend == null) {throw new DataNotFoundException("Friend not found");}
+        final User friend = getUser(friendId);
+        if (user == null) {throw new DataNotFoundException("Пользователь не найден");}
+        if (friend == null) {throw new DataNotFoundException("Друг пользователя не найден");}
         user.getFriendsId().remove(friendId);
         friend.getFriendsId().remove(userId);
     }
 
-    public Set<Long> getFriends(long userId) {
-        final User user = userStorage.get(userId);
-        return user.getFriendsId();
+    public List<User> getFriends(long userId) throws DataNotFoundException{
+        User user = getUser(userId);
+        if (user == null) {throw new DataNotFoundException("Пользователь не найден");}
+        return user.getFriendsId().stream().map(userStorage::get).collect(Collectors.toList());
     }
 
-    public Set<Long> getCommonFriends(long userId, long friendId) {
+    public List<User> getCommonFriends(long userId, long friendId) throws DataNotFoundException{
         final User user = userStorage.get(userId);
         final User friend = userStorage.get(friendId);
-        Set<Long> common = new HashSet<>();
-        common.addAll(user.getFriendsId());
-        common.addAll(friend.getFriendsId());
-        return common;
+        if (user == null) {throw new DataNotFoundException("Пользователь не найден");}
+        if (friend == null) {throw new DataNotFoundException("Друг пользователя не найден");}
+        Set<Long> userFriends = user.getFriendsId();
+        Set<Long> friendFriends = friend.getFriendsId();
+        return userFriends.stream()
+                .filter(friendFriends::contains)
+                .map(userStorage::get)
+                .collect(Collectors.toList());
     }
-
 }

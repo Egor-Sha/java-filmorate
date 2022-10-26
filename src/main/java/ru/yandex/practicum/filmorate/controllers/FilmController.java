@@ -12,48 +12,48 @@ import java.util.*;
 @Slf4j
 @RestController
 public class FilmController {
-    FilmService service;
+    FilmService filmService;
 
     @Autowired
-    public FilmController(FilmService service) {
-        this.service = service;
+    public FilmController(FilmService filmService) {
+        this.filmService = filmService;
     }
 
     @GetMapping("/films/{id}")
     public Film getFilm(@Valid @PathVariable("id") long id) throws DataNotFoundException {
-        return service.getFilm(id);
+        return filmService.getFilm(id);
     }
 
     @GetMapping("/films")
     public List<Film> getFilms() {
-        return service.getAll();
+        return filmService.getAll();
     }
 
     @PostMapping("/films")
     public Film create(@Valid @RequestBody final Film film) {
         log.info("Добавлен фильм " + film.getName());
-        return service.create(film);
+        return filmService.create(film);
     }
 
     @PutMapping("/films")
     public Film put(@Valid @RequestBody final Film film) {
         log.info("Фильм " + film.getName() + " изменен");
-        return service.update(film);
+        return filmService.update(film);
     }
 
 
     @PutMapping("/films/{id}/like/{userId}")
-    public void addLike(@PathVariable long id, @PathVariable long userId) {
-        service.addLike(id, userId);
+    public void addLike(@PathVariable("id") long id, @PathVariable("userId") long userId) {
+        filmService.addLike(id, userId);
     }
 
     @DeleteMapping("/films/{id}/like/{userId}")
-    public void removeLike(@PathVariable long id, @PathVariable long userId) {
-        service.removeLike(id, userId);
+    public void removeLike(@PathVariable("id") long id, @PathVariable("userId") long userId) {
+        filmService.removeLike(id, userId);
     }
 
-    @GetMapping("GET /films/popular?count={count}")
-    public List<Film> getPopular(@RequestParam(defaultValue = "10") @PathVariable int count) {
-        return service.getPopular(count);
+    @GetMapping("/films/popular")
+    public Set<Film> getPopular(@RequestParam(defaultValue = "10", required = false) int count) {
+        return filmService.getPopular(count);
     }
 }
