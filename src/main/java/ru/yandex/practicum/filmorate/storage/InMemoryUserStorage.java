@@ -9,6 +9,7 @@ import java.util.*;
 @Component
 public class InMemoryUserStorage implements UserStorage {
 
+    private long counter = 0L;
     private final Map<Long, User> storage = new HashMap<>();
 
     @Override
@@ -16,6 +17,7 @@ public class InMemoryUserStorage implements UserStorage {
         if(storage.containsKey(data.getId())) {
             throw new DataAlreadyExistException("duplicated: " + data.getId());
         }
+        data.setId(++counter);
         storage.put(data.getId(), data);
     }
 
@@ -37,8 +39,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public List<User> getAll() {
+    public ArrayList<User> getAll() {
         return new ArrayList<>(storage.values());
     }
-
 }

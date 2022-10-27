@@ -14,8 +14,7 @@ import java.util.stream.Collectors;
 @Service
 public class UserService {
 
-    UserStorage userStorage;
-    private long counter = 0L;
+    private final UserStorage userStorage;
 
     @Autowired
     public UserService(UserStorage userStorage) {
@@ -28,13 +27,14 @@ public class UserService {
 
     public User create(User data) {
         validate(data);
-        data.setId(++counter);
         userStorage.create(data);
         return data;
     }
 
-    public User update(User data) throws DataNotFoundException {
-        if (data == null){throw new DataNotFoundException("Нет данных");}
+    public User update(User data) {
+        if (data == null){
+            throw new DataNotFoundException("Нет данных");
+        }
         validate(data);
         userStorage.update(data);
         return data;
@@ -53,35 +53,49 @@ public class UserService {
         }
     }
 
-    public void addFriend(long userId, long friendId) throws DataNotFoundException {
+    public void addFriend(long userId, long friendId) {
         final User user = getUser(userId);
         final User friend = getUser(friendId);
-        if (user == null) {throw new DataNotFoundException("Пользователь не найден");}
-        if (friend == null) {throw new DataNotFoundException("Друг пользователя не найден");}
+        if (user == null) {
+            throw new DataNotFoundException("Пользователь не найден");
+        }
+        if (friend == null) {
+            throw new DataNotFoundException("Друг пользователя не найден");
+        }
         user.getFriendsId().add(friendId);
         friend.getFriendsId().add(userId);
     }
 
-    public void removeFriend(long userId, long friendId) throws DataNotFoundException {
+    public void removeFriend(long userId, long friendId) {
         final User user = getUser(userId);
         final User friend = getUser(friendId);
-        if (user == null) {throw new DataNotFoundException("Пользователь не найден");}
-        if (friend == null) {throw new DataNotFoundException("Друг пользователя не найден");}
+        if (user == null) {
+            throw new DataNotFoundException("Пользователь не найден");
+        }
+        if (friend == null) {
+            throw new DataNotFoundException("Друг пользователя не найден");
+        }
         user.getFriendsId().remove(friendId);
         friend.getFriendsId().remove(userId);
     }
 
-    public List<User> getFriends(long userId) throws DataNotFoundException{
+    public List<User> getFriends(long userId) {
         User user = getUser(userId);
-        if (user == null) {throw new DataNotFoundException("Пользователь не найден");}
+        if (user == null) {
+            throw new DataNotFoundException("Пользователь не найден");
+        }
         return user.getFriendsId().stream().map(userStorage::get).collect(Collectors.toList());
     }
 
-    public List<User> getCommonFriends(long userId, long friendId) throws DataNotFoundException{
+    public List<User> getCommonFriends(long userId, long friendId) {
         final User user = userStorage.get(userId);
         final User friend = userStorage.get(friendId);
-        if (user == null) {throw new DataNotFoundException("Пользователь не найден");}
-        if (friend == null) {throw new DataNotFoundException("Друг пользователя не найден");}
+        if (user == null) {
+            throw new DataNotFoundException("Пользователь не найден");
+        }
+        if (friend == null) {
+            throw new DataNotFoundException("Друг пользователя не найден");
+        }
         Set<Long> userFriends = user.getFriendsId();
         Set<Long> friendFriends = friend.getFriendsId();
         return userFriends.stream()

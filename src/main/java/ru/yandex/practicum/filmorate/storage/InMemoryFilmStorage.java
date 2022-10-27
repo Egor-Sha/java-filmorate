@@ -11,6 +11,7 @@ import java.util.Map;
 @Component
 public class InMemoryFilmStorage implements FilmStorage {
 
+    private long counter = 0L;
     private final Map<Long, Film> storage = new HashMap<>();
 
     @Override
@@ -18,6 +19,7 @@ public class InMemoryFilmStorage implements FilmStorage {
         if(storage.containsKey(data.getId())) {
             throw new DataAlreadyExistException("duplicated: " + data.getId());
         }
+        data.setId(++counter);
         storage.put(data.getId(), data);
     }
 

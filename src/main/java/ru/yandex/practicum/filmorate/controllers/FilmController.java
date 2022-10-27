@@ -12,7 +12,8 @@ import java.util.*;
 @Slf4j
 @RestController
 public class FilmController {
-    FilmService filmService;
+
+    private final FilmService filmService;
 
     @Autowired
     public FilmController(FilmService filmService) {
@@ -20,7 +21,7 @@ public class FilmController {
     }
 
     @GetMapping("/films/{id}")
-    public Film getFilm(@Valid @PathVariable("id") long id) throws DataNotFoundException {
+    public Film getFilm(@Valid @PathVariable("id") long id) {
         return filmService.getFilm(id);
     }
 

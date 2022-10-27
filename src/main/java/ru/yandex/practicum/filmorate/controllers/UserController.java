@@ -12,7 +12,8 @@ import java.util.*;
 @Slf4j
 @RestController
 public class UserController {
-    UserService userService;
+
+    private final UserService userService;
 
     @Autowired
     public UserController(UserService userService) {
@@ -20,7 +21,7 @@ public class UserController {
     }
 
     @GetMapping("/users/{id}")
-    public User getUser(@PathVariable("id") long id) throws DataNotFoundException {
+    public User getUser(@PathVariable("id") long id) {
         return userService.getUser(id);
     }
 
@@ -51,13 +52,12 @@ public class UserController {
     }
 
     @GetMapping("/users/{id}/friends")
-    public List<User> getFriends(@PathVariable("id") long id) throws DataNotFoundException {
+    public List<User> getFriends(@PathVariable("id") long id) {
         return userService.getFriends(id);
     }
 
     @GetMapping("/users/{id}/friends/common/{otherId}")
-    public List<User> getCommonFriends(@PathVariable("id") long id, @PathVariable("otherId") long otherId) throws DataNotFoundException {
+    public List<User> getCommonFriends(@PathVariable("id") long id, @PathVariable("otherId") long otherId) {
         return userService.getCommonFriends(id, otherId);
     }
-
 }

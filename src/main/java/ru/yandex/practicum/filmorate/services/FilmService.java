@@ -8,7 +8,6 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
@@ -18,9 +17,8 @@ import java.util.stream.Collectors;
 public class FilmService {
 
     private final LocalDate FIRST_MOVIE_DATE = LocalDate.of(1895, 12, 29);
-    UserStorage userStorage;
-    FilmStorage filmStorage;
-    private long counter = 0L;
+    private final UserStorage userStorage;
+    private final FilmStorage filmStorage;
 
     @Autowired
     public FilmService(FilmStorage filmStorage, UserStorage userStorage) {
@@ -34,13 +32,14 @@ public class FilmService {
 
     public Film create(Film data) {
         validate(data);
-        data.setId(++counter);
         filmStorage.create(data);
         return data;
     }
 
     public Film update(Film data) {
-        if (data == null){throw new DataNotFoundException("Фильм не найден");}
+        if (data == null){
+            throw new DataNotFoundException("Фильм не найден");
+        }
         validate(data);
         filmStorage.update(data);
         return data;
@@ -54,66 +53,35 @@ public class FilmService {
         if (data.getReleaseDate().isBefore(FIRST_MOVIE_DATE)) {
             throw new ValidationException("Проверьте дату релиза");
         }
-        if (data.getDescription().length()>=200) {
+        if (data.getDescription().length() >= 200) {
             throw new ValidationException("Описание должно быть до 200 символов");
         }
     }
 
-    public void addLike(long id, long userId) throws DataNotFoundException {
+    public void addLike(long id, long userId) {
         final Film film = filmStorage.get(id);
-        if (userStorage.get(userId) == null) {throw new DataNotFoundException("Пользователь не найден");}
+        if (userStorage.get(userId) == null) {
+            throw new DataNotFoundException("Пользователь не найден");
+        }
         film.addLike(userId);
     }
 
     public void removeLike(long id, long userId) {
         final Film film = filmStorage.get(id);
-        if (userStorage.get(userId) == null) {throw new DataNotFoundException("Пользователь не найден");}
+        if (userStorage.get(userId) == null) {
+            throw new DataNotFoundException("Пользователь не найден");
+        }
         film.removeLike(userId);
     }
 
-    public Set<Film> getPopular(int count) throws ValidationException{
-        if (count<=0) {throw new ValidationException("Количество должно быть больше нуля");
+    public Set<Film> getPopular(int count) {
+        if (count <= 0) {
+            throw new ValidationException("Количество должно быть больше нуля");
         }
-        ArrayList<Film> films = filmStorage.getAll();
+        List<Film> films = filmStorage.getAll();
         return films.stream()
                 .sorted(Comparator.comparingInt((film-> (int) (film.getRate()*(-1)))))
                 .limit(count)
                 .collect(Collectors.toSet());
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
