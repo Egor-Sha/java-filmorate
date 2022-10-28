@@ -1,56 +1,62 @@
 package ru.yandex.practicum.filmorate.controllers;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.services.UserService;
 import javax.validation.Valid;
-import java.time.LocalDate;
 import java.util.*;
 
 @Slf4j
 @RestController
 public class UserController {
-    private final Map<Long, User> users = new HashMap<>();
-    private long id = 1;
 
-    @PostMapping("/users")
-    public User create(@Valid @RequestBody User user) {
+    private final UserService userService;
 
-        validate(user);
-        user.setId(id++);
-        users.put(user.getId(), user);
-        log.info("Создан пользователь " + user.getLogin());
-        return user;
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
-    @PutMapping("/users")
-    public User put(@Valid @RequestBody User user) {
-
-        if (!(users.containsKey(user.getId()))) {
-                throw new ValidationException("Пользователь не найден");
-        }
-
-        validate(user);
-        users.put(user.getId(), user);
-        log.info("Пользователь " + user.getLogin() + " изменен");
-        return user;
+    @GetMapping("/users/{id}")
+    public User getUser(@PathVariable("id") long id) {
+        return userService.getUser(id);
     }
 
     @GetMapping("/users")
     public List<User> getUsers() {
-
-        return new ArrayList<>(users.values());
+        return userService.getAll();
     }
 
-    private void validate(User user) throws ValidationException {
-        if (user.getLogin().contains(" ")) {
-                throw new ValidationException("В логине не должно быть пробелов");
-        }
+    @PostMapping("/users")
+    public User create(@Valid @RequestBody final User user) {
+        log.info("Создан пользователь " + user.getLogin());
+        return userService.create(user);
+    }
 
-        if (!StringUtils.hasText(user.getName())) {
-            user.setName(user.getLogin());
-        }
+    @PutMapping("/users")
+    public User put(@Valid @RequestBody final User user) {
+        return userService.update(user);
+    }
+
+    @PutMapping("/users/{id}/friends/{friendId}")
+    public void addFriend(@PathVariable long id, @PathVariable long friendId) {
+        userService.addFriend(id, friendId);
+    }
+
+    @DeleteMapping("/users/{id}/friends/{friendId}")
+    public void removeFriend(@PathVariable long id, @PathVariable long friendId) {
+        userService.removeFriend(id, friendId);
+    }
+
+    @GetMapping("/users/{id}/friends")
+    public List<User> getFriends(@PathVariable("id") long id) {
+        return userService.getFriends(id);
+    }
+
+    @GetMapping("/users/{id}/friends/common/{otherId}")
+    public List<User> getCommonFriends(@PathVariable("id") long id, @PathVariable("otherId") long otherId) {
+        return userService.getCommonFriends(id, otherId);
     }
 }
