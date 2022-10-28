@@ -28,6 +28,7 @@ public class Film {
     private Set<Long> userIds = new HashSet<>();
     @JsonIgnore
     private long rate = 0;
+
     public void addLike(long userId) {
         userIds.add(userId);
         rate = userIds.size();

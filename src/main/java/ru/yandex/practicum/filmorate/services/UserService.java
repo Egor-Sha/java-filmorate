@@ -32,7 +32,7 @@ public class UserService {
     }
 
     public User update(User data) {
-        if (data == null){
+        if (data == null) {
             throw new DataNotFoundException("Нет данных");
         }
         validate(data);

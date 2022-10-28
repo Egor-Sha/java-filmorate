@@ -37,7 +37,7 @@ public class FilmService {
     }
 
     public Film update(Film data) {
-        if (data == null){
+        if (data == null) {
             throw new DataNotFoundException("Фильм не найден");
         }
         validate(data);

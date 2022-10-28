@@ -39,7 +39,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public ArrayList<User> getAll() {
+    public List<User> getAll() {
         return new ArrayList<>(storage.values());
     }
 }
